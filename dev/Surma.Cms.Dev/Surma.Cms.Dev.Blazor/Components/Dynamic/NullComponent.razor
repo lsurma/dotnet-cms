@@ -1,0 +1,12 @@
+﻿@implements IComponentInterface
+
+<div>NullComponent</div>
+
+
+@code {
+    [Parameter]
+    public string Value { get; set; }
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+}

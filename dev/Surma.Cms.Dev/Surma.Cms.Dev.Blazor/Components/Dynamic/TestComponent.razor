@@ -1,0 +1,14 @@
+﻿@implements IComponentInterface
+
+<div>
+    Value: @Value
+    <button @onclick="@(() => ValueChanged.InvokeAsync(Guid.NewGuid().ToString()))">Change value</button>
+</div>
+
+@code {
+    [Parameter]
+    public string Value { get; set; }
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+}

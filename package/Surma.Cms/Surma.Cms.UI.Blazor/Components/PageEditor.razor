@@ -1,0 +1,78 @@
+﻿@using System.Text.Json
+@using System.Text.Json.Serialization
+@using Surma.Cms.Core.DynamicPages
+<div class="PageEditor">
+    <div>
+        <input type="text" @bind="PageIdValue" style="width: 100%;" /> <br />
+        <button @onclick="@Load">Load</button>
+        <button @onclick="@Save">Save</button>
+        <br />
+        <pre>@JsonSerializer.Serialize(Page, new JsonSerializerOptions() { WriteIndented = true, ReferenceHandler = ReferenceHandler.IgnoreCycles})</pre>
+    </div>
+    
+    <div style="height: 600px">
+        <MonacoEditor Id="PageEditor" Content="@Content" ContentChanged="ContentChanged" />
+    </div>
+</div>
+
+@code {
+    [Inject]
+    public required IPageRepository PageRepository { get; set; }
+    
+    protected string? PageIdValue { get; set; }
+
+    protected Page? Page { get; set; }
+    
+    protected string? Content { get; set; }
+    
+    protected Guid? GetPageIdAsGuid()
+    {
+        if (Guid.TryParse(PageIdValue, out var pageId))
+        {
+            return pageId;
+        }
+
+        return null;
+    }
+    
+    protected async Task Save()
+    {
+        if (Page is null)
+        {
+            Page = new Page()
+            {
+                Id = Guid.NewGuid(),
+                Name = "New Page",
+                Slug = "page",
+                RouteTemplate = "/kurs/{id}-{slug}",
+            };
+            
+            await PageRepository.InsertAsync(Page, true, CancellationToken.None);
+        }
+        else
+        {
+            await PageRepository.UpdateAsync(Page, true, CancellationToken.None);
+        }
+    }
+    
+    protected async Task Load()
+    {
+        if (GetPageIdAsGuid() is null)
+        {
+            return;
+        }
+
+        Page = await PageRepository.FindAsync(GetPageIdAsGuid()!.Value, CancellationToken.None);
+        StateHasChanged();
+    }
+    
+    protected async Task ContentChanged(string? content)
+    {
+        if (Page is null)
+        {
+            return;
+        }
+        
+        // Page.SetContent(content);
+    }
+}

@@ -1,0 +1,140 @@
+﻿@inherits CmsComponentBase<CmsManager.NavParams>
+@inject IDialogService DialogService
+
+<div style="margin-top : 18px;">
+    <FluentStack HorizontalGap="16">
+        <FluentAnchor Appearance="Appearance.Accent" Href="@(Url.WithUrlParams(p => { p.Action = "create"; }).ToString())">
+            <FluentIcon Value="@(new Icons.Regular.Size16.Add())" Color="@Color.Lightweight" Slot="start" />
+            Create
+        </FluentAnchor>
+    </FluentStack>
+</div>
+
+<FluentTreeView Items="@Items" SelectedItem="@SelectedItem" SelectedItemChanged="SelectedItemChanged" />
+
+@code {
+    protected override string UrlParamsQueryKey { get; set; } = nameof(Pages);
+
+    protected List<ITreeViewItem> Items { get; set; } = new List<ITreeViewItem>();
+
+    protected ITreeViewItem? SelectedItem { get; set; }
+
+    protected string? SelectedItemId { get; set; }
+
+    protected IDialogReference? EditorPanel { get; set; }
+
+    protected ActionPanel.ActionPanelContentModel? EditorPanelContent { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetPagesAsync();
+    }
+    
+    protected async Task GetPagesAsync()
+    {
+        var pages = await DataService.HandleAsync((repo) => repo.GetAllAsync(CancellationToken.None));
+        var pagesByHost = pages.GroupBy(p => p.Host);
+
+        Items = pagesByHost
+            .Select(p => new TreeViewItem(
+                p.Key,
+                p.Key,
+                p.Select(p => new TreeViewItem(p.Id.ToString(), p.RouteTemplate))
+            )
+            {
+                Expanded = true
+            })
+            .Cast<ITreeViewItem>()
+            .ToList();
+    }
+
+    protected override void OnUrlParamsSet(CmsManager.NavParams before)
+    {
+        SelectedItemId = UrlParams.Id;
+        ToggleEditorAsync(SelectedItemId);
+        StateHasChanged();
+    }
+
+    protected async Task ToggleEditorAsync(string? id)
+    {
+        try
+        {
+            if (EditorPanel != null && id == null)
+            {
+                await EditorPanel.CloseAsync();
+                EditorPanel = null;
+                return;
+            }
+
+            if (EditorPanel == null && id != null)
+            {
+                EditorPanelContent = new ActionPanel.ActionPanelContentModel()
+                {
+                    ComponentType = typeof(PageForm),
+                    Parameters = new ActionPanel.ParametersBag()
+                    {
+                        { "PageId", id }
+                    },
+                };
+                EditorPanel = await DialogService.ShowPanelAsync<ActionPanel>(
+                    EditorPanelContent,
+                    new DialogParameters()
+                    {
+                        Id = $"panel-{Identifier.NewId()}",
+                        Modal = false,
+                        Width = "100%",
+                        Title = id,
+                        PreventDismissOnOverlayClick = true,
+                        OnDialogClosing = EventCallback.Factory.Create<DialogInstance>(this, () => {
+                            EditorPanel = null;
+
+                        }),
+                        OnDialogResult = EventCallback.Factory.Create<DialogResult>(this, (result) => {
+                            EditorPanel = null;
+                        })
+                    }
+                    );
+                return;
+            }
+
+            if (EditorPanel != null && id != null)
+            {
+                EditorPanelContent!.Change((parameters) => {
+                    parameters["PageId"] = id;
+                    return parameters;
+                });
+
+                // await DialogService.UpdateDialogAsync<PageEditorPanel.ContentModel>(EditorPanel.Id, new DialogParameters<PageEditorPanel.ContentModel>()
+                // {
+                //     Id = EditorPanel.Id,
+                //     Title = id,
+                //     DialogType = EditorPanel.Instance.Parameters.DialogType,
+                //     Alignment = EditorPanel.Instance.Parameters.Alignment,
+                //     Modal = false,
+                //     Width = "100%",
+                //     PreventDismissOnOverlayClick = true,
+                // });
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
+
+    private Task SelectedItemChanged(ITreeViewItem? arg)
+    {
+        ChangeUrlParams(current => {
+            current.Id = arg?.Id;
+            return current;
+        }, true);
+
+        Task.Run(async () => {
+            // await Task.Delay(150);
+            // SelectedItem = null;
+            // await InvokeAsync(StateHasChanged);
+        });
+
+        return Task.CompletedTask;
+    }
+}

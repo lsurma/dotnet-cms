@@ -1,0 +1,63 @@
+﻿<h3>PageForm - @PageId - @ActionContext?.InProgress</h3>
+
+<FluentTextField Label="Host" @bind-Value="Model.Host "/>
+<FluentTextField Label="RouteTemplate" @bind-Value="Model.RouteTemplate "/>
+
+@code {
+    [Parameter]
+    public string? PageId { get; set; }
+    
+    [CascadingParameter]
+    public ActionContext? ActionContext { get; set; }
+    
+    protected PageCreateUpdateModel Model { get; set; } = new PageCreateUpdateModel();
+
+    protected override void OnInitialized()
+    {
+        if (ActionContext is not null)
+        {
+            ActionContext.Actions[nameof(SubmitDataAsync)] = SubmitDataAsync;
+        }
+        
+        base.OnInitialized();
+    }
+
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        var pageId = parameters.GetValueOrDefault<string>("PageId");
+
+        if (pageId != PageId)
+        {
+            Load(pageId);
+        }
+        
+        return base.SetParametersAsync(parameters);
+    }
+
+    protected async Task SubmitDataAsync()
+    {
+        Console.WriteLine("SubmitDataAsync");
+        
+        if (ActionContext is not null)
+        {
+            ActionContext.Change(ctx => ctx.InProgress = true);
+            await Task.Delay(2500);
+            ActionContext.Change(ctx => {
+                ctx.InProgress = false;
+            });
+        }
+    }
+    
+    protected async Task Load(string pageId)
+    {
+        if (ActionContext is not null)
+        {
+            ActionContext.Change(ctx => ctx.InProgress = true);
+            await Task.Delay(2500);
+            ActionContext.Change(ctx => {
+                ctx.ElementDisplayName = pageId ?? "New Page";
+                ctx.InProgress = false;
+            });
+        }
+    }
+}

@@ -1,0 +1,40 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.SignalR
+@using Surma.Cms.Dev.Blazor.Hubs
+@using Surma.Cms.UI.Blazor.Components
+
+<div style="padding : 30px;">
+    @* <PageEditor /> *@
+</div>
+
+<button @onclick="Update">test</button>
+
+
+@code {
+    [Inject]
+    protected IHubContext<AppHub> AppHub { get; set; }
+    
+    protected List<ComboBoxOption> AllOptions { get; set; } = new List<ComboBoxOption>
+    {
+        new ComboBoxOption { Value = "1", Label = "Option 1" },
+        new ComboBoxOption { Value = "2", Label = "Option 2" },
+        new ComboBoxOption { Value = "3", Label = "Option 3" },
+        new ComboBoxOption { Value = "4", Label = "Option 4" },
+        new ComboBoxOption { Value = "5", Label = "Option 5" },
+    };
+    
+    protected List<ComboBoxOption> SelectedOptions { get; set; } = new List<ComboBoxOption>();
+    
+    protected string? ComboBoxValue { get; set; }
+    
+    private async Task Update()
+    {
+        await AppHub.Clients.All.SendAsync("Update");
+    }
+    
+    public class ComboBoxOption
+    {
+        public string Value { get; set; }
+        public string Label { get; set; }
+    }
+}

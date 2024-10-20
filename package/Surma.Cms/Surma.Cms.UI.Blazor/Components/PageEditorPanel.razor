@@ -1,0 +1,92 @@
+﻿@implements IDialogContentComponent<PageEditorPanel.EditorPanelContentModel>
+
+<FluentDialogHeader>
+    @Content.Id
+</FluentDialogHeader>
+
+<FluentDialogBody>
+    <MonacoEditor Id="PageEditor" Content="@Content.Id" />
+</FluentDialogBody>
+
+<FluentDialogFooter>
+    @if (!String.IsNullOrWhiteSpace(Dialog.Instance.Parameters.PrimaryAction))
+    {
+        <FluentButton Title="@Dialog.Instance?.Parameters?.PrimaryAction"
+                      OnClick="@OnPrimaryActionButtonClickAsync"
+                      Appearance="Appearance.Accent"
+                      Disabled="@(Dialog.Instance?.Parameters?.PrimaryActionEnabled == false)">
+            @Dialog.Instance.Parameters.PrimaryAction
+        </FluentButton>
+    }
+    @if (!String.IsNullOrWhiteSpace(Dialog.Instance.Parameters.SecondaryAction))
+    {
+        <FluentButton Title="@Dialog.Instance?.Parameters?.SecondaryAction"
+                      OnClick="@OnSecondaryActionButtonClickAsync"
+                      Appearance="Appearance.Neutral"
+                      Disabled="@(Dialog.Instance?.Parameters?.SecondaryActionEnabled == false)">
+            @Dialog.Instance?.Parameters?.SecondaryAction
+        </FluentButton>
+    }
+    
+    <FluentButton Title="@Dialog.Instance?.Parameters?.SecondaryAction"
+                      OnClick="@OnDeleteActionButtonClickAsync"
+                      Appearance="Appearance.Accent"
+                      IconStart="@(new Icons.Regular.Size16.Delete())"
+                      BackgroundColor="var(--error)" Color="var(--foreground-on-accent-rest)"
+                      Disabled="@(Dialog.Instance?.Parameters?.SecondaryActionEnabled == false)">
+            Delete
+        </FluentButton>
+</FluentDialogFooter>
+
+@code {
+    [Parameter]
+    public EditorPanelContentModel Content { get; set; } = default!;
+
+    [CascadingParameter]
+    public FluentDialog  Dialog { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        Console.WriteLine($"PageEditorPanel.OnInitialized {DateTime.UtcNow.Ticks}");
+        Content.StateHasChanged = Update;
+        base.OnInitialized();
+    }
+
+    protected async Task Update()
+    {
+        Dialog.Instance.Parameters.Title = Content.Id;
+        Dialog.Class = "ms-Dialog--largeHeader";
+        await InvokeAsync(StateHasChanged);
+    }
+    
+    private async Task OnPrimaryActionButtonClickAsync()
+    {
+        if (Dialog.Instance?.Parameters?.PrimaryActionEnabled == true)
+        {
+            await Dialog!.CloseAsync(Dialog.Instance?.Content ?? true);
+        }
+    }
+    
+    private async Task OnDeleteActionButtonClickAsync()
+    {
+        await Dialog!.CloseAsync(DialogResult.Ok(new { Delete = true }));
+    }
+
+    /// <summary />
+    private async Task OnSecondaryActionButtonClickAsync()
+    {
+        if (Dialog.Instance?.Parameters?.SecondaryActionEnabled == true)
+        {
+            await Dialog!.CancelAsync(Dialog.Instance?.Content ?? false);
+        }
+    }
+    
+    public class EditorPanelContentModel
+    {
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+
+        public Func<Task> StateHasChanged { get; set; }
+    }
+    
+    
+}

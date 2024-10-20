@@ -1,0 +1,85 @@
+﻿@inject IJSRuntime JSRuntime
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
+
+<div id="@Id" style="width:100%;height:100%;border:1px solid grey"></div>
+
+@code {
+    private IJSObjectReference? module;
+
+    [Parameter]
+    public string Id { get; set; } = "";
+
+    [Parameter]
+    public string? Content { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<string?> ContentChanged { get; set; }
+
+    private DotNetObjectReference<MonacoEditor>? _objRef;
+
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        var content = parameters.GetValueOrDefault<string?>(nameof(Content));
+        
+        if (content is not null && content != Content)
+        {
+            Content = content;
+            SetContentAsync(content);
+        }
+        
+        await base.SetParametersAsync(parameters);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/Surma.Cms.UI.Blazor/monaco-interop.js");
+            _objRef = DotNetObjectReference.Create(this);
+
+            await module.InvokeVoidAsync("init", Id, _objRef, new
+            {
+                value = Content,
+                language = "razor",
+            });
+        }
+    }
+    
+    protected async Task SetContentAsync(string content)
+    {
+        if (module == null)
+        {
+            return;
+        }
+        
+        await module.InvokeVoidAsync("setContent", Id, content);
+    }
+
+    [JSInvokable]
+    public async Task OnContentChanged(string content)
+    {
+        // local state for compare
+        Content = content;
+        await ContentChanged.InvokeAsync(content);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (module is not null)
+        {
+            try
+            {
+                await module.InvokeVoidAsync("dispose", Id);
+                await module.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // The JSRuntime may have been disposed already if the app is shutting down,
+                // so we can ignore this exception.
+            }
+        }
+
+        _objRef?.Dispose();
+    }
+}

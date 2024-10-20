@@ -1,0 +1,42 @@
+﻿@page "/weather"
+@using Surma.Cms.Dev.Blazor.Components.Dynamic
+
+<PageTitle>Weather</PageTitle>
+
+<div class="dynamic">
+    <DynamicComponent Type="ComponentType" Parameters="Params" />
+</div>
+
+Value from dynamic: @Value
+
+<button @onclick="ChangeComponentAsync">Change component</button>
+
+@code {
+    [Inject]
+    public IComponentInterface ComponentConcrete { get; set; }
+    
+    public string Value { get; set; }
+
+    public EventCallback<string> ValueChanged { get; set; }
+    
+    public Type ComponentType { get; set; }
+
+    protected Dictionary<string, object> Params { get; set; } = new Dictionary<string, object>();
+    
+    protected override void OnInitialized()
+    {
+        ComponentType = ComponentConcrete.GetType();
+        Params["ValueChanged"] = EventCallback.Factory.Create<string>(this, HandleValueChanged);
+        base.OnInitialized();
+    }
+    
+    protected async Task HandleValueChanged(string value)
+    {
+        Value = value;
+        Params["Value"] = value;
+    }
+
+    private async Task ChangeComponentAsync()
+    {
+    }
+}

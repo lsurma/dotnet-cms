@@ -1,0 +1,57 @@
+﻿@using System.Text.Json
+@inherits CmsComponentBase<CmsManager.NavParams>
+
+<ComponentRoot @ref="ComponentRootRef" CompontentType="typeof(CmsManager)">
+    <div>
+        <FluentStack HorizontalGap="16">
+            <FluentAnchor Appearance="Appearance.Accent" Href="@(Url.WithUrlParams(p => { p.View = "pages"; }).ToString())">Pages</FluentAnchor>
+            <FluentAnchor Appearance="Appearance.Accent" Href="@(Url.WithUrlParams(p => { p.View = "assets"; }).ToString())">Assets</FluentAnchor>
+        </FluentStack>
+    </div>
+
+    <div>
+        @if (UrlParams.View == "pages")
+        {
+            <Pages />
+        }
+        else if (UrlParams.View == "assets")
+        {
+            <b>assets</b>
+        }
+        else
+        {
+            <b>home</b>
+        }
+    </div>
+</ComponentRoot>
+
+@code {
+    protected override string UrlParamsQueryKey { get; set; } = nameof(CmsManager);
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Console.WriteLine($"CmsManager.OnInitialized {DateTime.UtcNow.Ticks}");
+    }
+
+    public class NavParams : ICloneable
+    {
+        public Guid? IdG { get; set; }
+        
+        public string? View { get; set; }
+
+        public string? Action { get; set; }
+
+        public string? Id { get; set; }
+        
+        public object Clone()
+        {
+            return new NavParams
+            {
+                View = View,
+                Action = Action,
+                Id = Id
+            };
+        }
+    }
+}

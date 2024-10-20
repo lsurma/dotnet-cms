@@ -1,0 +1,116 @@
+﻿@implements IDialogContentComponent<ActionPanel.ActionPanelContentModel>
+
+<CascadingValue Value="Context">
+    <FluentDialogHeader>
+        ActionPanelContentModel - @Context.ElementDisplayName - @Context?.InProgress
+    </FluentDialogHeader>
+
+    <FluentDialogBody>
+        <DynamicComponent Type="Content.ComponentType" Parameters="Content.Parameters" />
+    </FluentDialogBody>
+
+    <FluentDialogFooter>
+        @if (!String.IsNullOrWhiteSpace(Dialog.Instance.Parameters.PrimaryAction))
+        {
+            <FluentButton Title="@Dialog.Instance?.Parameters?.PrimaryAction"
+                          OnClick="@OnPrimaryActionButtonClickAsync"
+                          Appearance="Appearance.Accent"
+                          Disabled="@(Dialog.Instance?.Parameters?.PrimaryActionEnabled == false || Context?.InProgress is true)">
+                @Dialog.Instance.Parameters.PrimaryAction
+            </FluentButton>
+        }
+        @if (!String.IsNullOrWhiteSpace(Dialog.Instance.Parameters.SecondaryAction))
+        {
+            <FluentButton Title="@Dialog.Instance?.Parameters?.SecondaryAction"
+                          OnClick="@OnSecondaryActionButtonClickAsync"
+                          Appearance="Appearance.Neutral"
+                          Disabled="@(Dialog.Instance?.Parameters?.SecondaryActionEnabled == false)">
+                @Dialog.Instance?.Parameters?.SecondaryAction
+            </FluentButton>
+        }
+        
+        <FluentButton Title="@Dialog.Instance?.Parameters?.SecondaryAction"
+                          OnClick="@OnDeleteActionButtonClickAsync"
+                          Appearance="Appearance.Accent"
+                          IconStart="@(new Icons.Regular.Size16.Delete())"
+                          BackgroundColor="var(--error)" Color="var(--foreground-on-accent-rest)"
+                          Disabled="@(Dialog.Instance?.Parameters?.SecondaryActionEnabled == false)">
+                Delete
+            </FluentButton>
+    </FluentDialogFooter>
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public ActionPanelContentModel Content { get; set; } = default!;
+
+    [CascadingParameter]
+    public FluentDialog  Dialog { get; set; }
+    
+    public ActionContext Context { get; set; } = new ActionContext();
+    
+    protected override void OnInitialized()
+    {
+        Console.WriteLine($"PageEditorPanel.OnInitialized {DateTime.UtcNow.Ticks}");
+        Content.Bind(this);
+        Context.Bind(this);
+        base.OnInitialized();
+    }
+
+    public async Task InvokeStateHasChangedAsync()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+    
+    private async Task OnPrimaryActionButtonClickAsync()
+    {
+        if(Context.Actions.TryGetValue("SubmitDataAsync", out var action))
+        {
+            await action.Invoke();
+        }
+        
+        // if (Dialog.Instance?.Parameters?.PrimaryActionEnabled == true)
+        // {
+            // await Dialog!.CloseAsync(Dialog.Instance?.Content ?? true);
+        // }
+    }
+    
+    private async Task OnDeleteActionButtonClickAsync()
+    {
+        await Dialog!.CloseAsync(DialogResult.Ok(new { Delete = true }));
+    }
+
+    /// <summary />
+    private async Task OnSecondaryActionButtonClickAsync()
+    {
+        if (Dialog.Instance?.Parameters?.SecondaryActionEnabled == true)
+        {
+            await Dialog!.CancelAsync(Dialog.Instance?.Content ?? false);
+        }
+    }
+    
+    public class ActionPanelContentModel
+    {
+        public Type ComponentType { get; set; }
+        
+        public ParametersBag Parameters { get; set; } = new ParametersBag();
+
+        protected Func<Task> StateHasChanged { get; set; }
+
+        public void Bind(ActionPanel actionPanel)
+        {
+            StateHasChanged = actionPanel.InvokeStateHasChangedAsync;
+        }
+        
+        public void Change(Func<ParametersBag, ParametersBag> paramsSetter)
+        {
+            var newParams = paramsSetter(Parameters);
+            Parameters = newParams;
+            StateHasChanged.Invoke();
+        }
+    }
+
+    public class ParametersBag : Dictionary<string, object>
+    {
+    }
+}

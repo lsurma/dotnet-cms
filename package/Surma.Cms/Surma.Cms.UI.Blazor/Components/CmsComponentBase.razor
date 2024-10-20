@@ -1,0 +1,200 @@
+﻿@inject NavigationManager Navigation
+@inject IJSRuntime JsRuntime
+@inherits ComponentBase
+@typeparam TUrlParams where TUrlParams : class, ICloneable, new() 
+@using System.Linq.Expressions
+@using System.Text.Json.Serialization
+@using Surma.Cms.UI.Blazor.DAL
+@implements IDisposable 
+
+@code {
+    [CascadingParameter] 
+    private ComponentRoot? ParentComponent { get; set; }
+    
+    [Inject]
+    protected ICmsBlazorDataService DataService { get; set; }
+    
+    protected ComponentRoot? ComponentRootRef { get; set; }
+    
+    protected ComponentUrlHelper<TUrlParams> Url { get; private set; }
+    
+    protected virtual string UrlParamsQueryKey { get; set; } = "defaultKey"; // Default key, can be overridden in derived components
+
+    protected virtual string UrlParamsQueryKeyPrefix { get; set; } = "p_"; // Default key, can be overridden in derived components
+
+    protected string ParamsQueryKeyInternal => $"{UrlParamsQueryKeyPrefix}{UrlParamsQueryKey}";
+    
+    protected TUrlParams UrlParams { get; set; } = new TUrlParams();
+    
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        ParentComponent?.Children.Add(ParamsQueryKeyInternal);
+        Url = new ComponentUrlHelper<TUrlParams>(this);
+        Navigation.LocationChanged += HandleLocationChanged;
+        OnLocationChanged();
+    }
+
+    public virtual void Dispose()
+    {
+        ParentComponent?.Children.Remove(ParamsQueryKeyInternal);
+
+        // Unsubscribe from location changed event
+        Navigation.LocationChanged -= HandleLocationChanged;
+    }
+    
+    private void HandleLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        OnLocationChanged();
+        StateHasChanged();
+    }
+
+    protected virtual void OnUrlParamsSet(TUrlParams before)
+    {
+    }
+
+    protected virtual void OnLocationChanged()
+    {
+        var urlParams = Url.DeserializeFromUrl();
+        var before = UrlParams.Clone() as TUrlParams;
+        UrlParams = urlParams;
+        OnUrlParamsSet(before!);
+        StateHasChanged();
+    }
+
+    protected void ChangeUrlParams(Func<TUrlParams, TUrlParams> setter, bool withoutNavigation = false)
+    {
+        var paramsBefore = UrlParams.Clone() as TUrlParams;
+        var newParams = setter(UrlParams.Clone() as TUrlParams);
+
+        if (withoutNavigation)
+        {
+            UrlParams = newParams;
+            OnUrlParamsSet(paramsBefore!);
+            var uri = Url.WithUrlParams(newParams);
+            JsRuntime.InvokeVoidAsync("updateUrl", uri.ToString());
+            StateHasChanged();
+            return;
+        }
+        
+        Url.SetUrlParamsWithNavigation(newParams, false);        
+    }
+    
+    public class ComponentUrlHelper<TComponentUrlParams> where TComponentUrlParams : class, TUrlParams, new() 
+    {
+        private readonly NavigationManager _navigation;
+        
+        private CmsComponentBase<TComponentUrlParams> BoundedComponent { get; set; }
+        
+        public ComponentUrlHelper(CmsComponentBase<TComponentUrlParams> boundedComponentInstance)
+        {
+            _navigation = boundedComponentInstance.Navigation;
+            BoundedComponent = boundedComponentInstance;
+        }
+
+        public TUrlParams DeserializeFromUrl()
+        {
+            var uri = _navigation.ToAbsoluteUri(_navigation.Uri);
+            var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+            
+            if (queryParams.TryGetValue(BoundedComponent.ParamsQueryKeyInternal, out var jsonData))
+            {
+                return System.Text.Json.JsonSerializer.Deserialize<TUrlParams>(jsonData) ?? new TUrlParams();
+            }
+            
+            return new TUrlParams();
+        }
+        
+        public void SetUrlParamsWithNavigation(TComponentUrlParams urlParams, bool replace = false)
+        {
+            var newUri = CreateUriWithQueryParamsInternal(urlParams, false, true);
+            _navigation.NavigateTo(newUri.ToString(), false, replace);
+        }
+
+        public Uri WithUrlParams(Action<TUrlParams> setter, bool reset = true)
+        {
+            var urlParams = reset ? new TUrlParams() : (BoundedComponent.UrlParams.Clone() as TUrlParams)!;
+            setter((urlParams as TUrlParams)!);
+            return WithUrlParams(urlParams);
+        }
+        
+        public Uri WithUrlParams(TUrlParams urlParams)
+        {
+            return CreateUriWithQueryParamsInternal(urlParams, false, true);
+        }
+
+        private Uri CreateUriWithQueryParamsInternal(
+            TUrlParams urlParams, 
+            bool removeExistingQueryParams = false,
+            bool removeChildrenQueryParams = false
+        )
+        {
+            var serialized = System.Text.Json.JsonSerializer.Serialize(
+                urlParams, 
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    WriteIndented = false,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                }
+            );
+            
+            var queryParamsDict = new Dictionary<string, string>()
+            {
+                { BoundedComponent.ParamsQueryKeyInternal, serialized }
+            };
+            
+            return CreateUriWithQueryParamsInternal(queryParamsDict,removeExistingQueryParams, removeChildrenQueryParams);
+        }
+        
+        private Uri CreateUriWithQueryParamsInternal(
+            Dictionary<string, string> queryParams, 
+            bool removeExistingQueryParams = false,
+            bool removeChildrenQueryParams = false
+        )
+        {
+            var uri = _navigation.ToAbsoluteUri(_navigation.Uri);
+            var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(removeExistingQueryParams ? null : uri.Query);
+
+            if (removeChildrenQueryParams)
+            {
+                foreach (var (key, _) in query)
+                {
+                    if (BoundedComponent.ComponentRootRef?.Children.Contains(key) == true)
+                    {
+                        query.Remove(key);
+                    }
+                }
+            }
+            
+            foreach (var param in queryParams)
+            {
+                query[param.Key] = param.Value;
+            }
+
+            var newQuery = new List<string>();
+            foreach (var param in query)
+            {
+                newQuery.Add($"{param.Key}={param.Value}");
+            }
+
+            var newUri = new Uri($"{uri.GetLeftPart(UriPartial.Path)}?{string.Join("&", newQuery)}");
+            return newUri;
+        }
+        
+        private string GetMemberName(Expression expression)
+        {
+            if (expression is MemberExpression memberExpression)
+            {
+                return memberExpression.Member.Name;
+            }
+            else if (expression is UnaryExpression unaryExpression && unaryExpression.Operand is MemberExpression operand)
+            {
+                return operand.Member.Name;
+            }
+            throw new ArgumentException("Invalid expression");
+        }
+        
+        
+    }
+
+}

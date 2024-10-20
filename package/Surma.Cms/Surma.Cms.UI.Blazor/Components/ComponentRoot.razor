@@ -1,0 +1,29 @@
+﻿@inherits ComponentBase
+
+<CascadingValue Value="this">
+    <div class="@($"ComponentRoot {ComponentName}")">
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    
+    [Parameter]
+    public Type CompontentType { get; set; }
+
+    public List<string> Children { get; set; } = new List<string>();
+    
+    public string ComponentRootId { get; set; }
+    
+    public string ComponentName { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        ComponentName = CompontentType.Name;
+        ComponentRootId = $"{ComponentName}:{ComponentRootId}";
+        Console.WriteLine($"{ComponentRootId} {DateTime.UtcNow.Ticks}");
+        base.OnInitialized();
+    }
+}
