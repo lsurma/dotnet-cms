@@ -1,4 +1,5 @@
-﻿@inherits CmsComponentBase<CmsManager.NavParams>
+﻿@using Surma.Cms.UI.Blazor.Components.ActionHandling
+@inherits CmsComponentBase<CmsManager.NavParams>
 @inject IDialogService DialogService
 
 <div style="margin-top : 18px;">
@@ -23,7 +24,7 @@
 
     protected IDialogReference? EditorPanel { get; set; }
 
-    protected ActionPanel.ActionPanelContentModel? EditorPanelContent { get; set; }
+    protected ActionHandlingPanelContentModel? EditorPanelContent { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -68,15 +69,15 @@
 
             if (EditorPanel == null && id != null)
             {
-                EditorPanelContent = new ActionPanel.ActionPanelContentModel()
+                EditorPanelContent = new ActionHandlingPanelContentModel()
                 {
                     ComponentType = typeof(PageForm),
-                    Parameters = new ActionPanel.ParametersBag()
+                    Parameters = new ActionPanelParametersBag()
                     {
                         { "PageId", id }
                     },
                 };
-                EditorPanel = await DialogService.ShowPanelAsync<ActionPanel>(
+                EditorPanel = await DialogService.ShowPanelAsync<ActionHandlingPanel>(
                     EditorPanelContent,
                     new DialogParameters()
                     {

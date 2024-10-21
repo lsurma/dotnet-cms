@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Surma.Cms.Core", "..\..\pac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Surma.Cms.UI.Blazor", "..\..\package\Surma.Cms\Surma.Cms.UI.Blazor\Surma.Cms.UI.Blazor.csproj", "{83B9B5A9-BA28-45E1-B2E8-5B7D8F1D983A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp1", "BlazorApp1\BlazorApp1.csproj", "{78FAE357-ABBB-4889-977F-10BBF7A43455}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,9 +31,5 @@ Global
 		{83B9B5A9-BA28-45E1-B2E8-5B7D8F1D983A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83B9B5A9-BA28-45E1-B2E8-5B7D8F1D983A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83B9B5A9-BA28-45E1-B2E8-5B7D8F1D983A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{78FAE357-ABBB-4889-977F-10BBF7A43455}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{78FAE357-ABBB-4889-977F-10BBF7A43455}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{78FAE357-ABBB-4889-977F-10BBF7A43455}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{78FAE357-ABBB-4889-977F-10BBF7A43455}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

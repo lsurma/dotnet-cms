@@ -1,8 +1,8 @@
-﻿@implements IDialogContentComponent<ActionPanel.ActionPanelContentModel>
+﻿@implements IDialogContentComponent<ActionHandlingPanelContentModel>
 
 <CascadingValue Value="Context">
     <FluentDialogHeader>
-        ActionPanelContentModel - @Context.ElementDisplayName - @Context?.InProgress
+        ActionPanelContentModel - @Context.ElementDisplayName - @Context?.AnyActionInProgress
     </FluentDialogHeader>
 
     <FluentDialogBody>
@@ -15,7 +15,7 @@
             <FluentButton Title="@Dialog.Instance?.Parameters?.PrimaryAction"
                           OnClick="@OnPrimaryActionButtonClickAsync"
                           Appearance="Appearance.Accent"
-                          Disabled="@(Dialog.Instance?.Parameters?.PrimaryActionEnabled == false || Context?.InProgress is true)">
+                          Disabled="@(Dialog.Instance?.Parameters?.PrimaryActionEnabled == false || Context?.AnyActionInProgress is true)">
                 @Dialog.Instance.Parameters.PrimaryAction
             </FluentButton>
         }
@@ -42,12 +42,12 @@
 
 @code {
     [Parameter]
-    public ActionPanelContentModel Content { get; set; } = default!;
+    public ActionHandlingPanelContentModel Content { get; set; } = default!;
 
     [CascadingParameter]
     public FluentDialog  Dialog { get; set; }
     
-    public ActionContext Context { get; set; } = new ActionContext();
+    public ActionHandlingContext Context { get; set; } = new ActionHandlingContext();
     
     protected override void OnInitialized()
     {
@@ -87,30 +87,5 @@
         {
             await Dialog!.CancelAsync(Dialog.Instance?.Content ?? false);
         }
-    }
-    
-    public class ActionPanelContentModel
-    {
-        public Type ComponentType { get; set; }
-        
-        public ParametersBag Parameters { get; set; } = new ParametersBag();
-
-        protected Func<Task> StateHasChanged { get; set; }
-
-        public void Bind(ActionPanel actionPanel)
-        {
-            StateHasChanged = actionPanel.InvokeStateHasChangedAsync;
-        }
-        
-        public void Change(Func<ParametersBag, ParametersBag> paramsSetter)
-        {
-            var newParams = paramsSetter(Parameters);
-            Parameters = newParams;
-            StateHasChanged.Invoke();
-        }
-    }
-
-    public class ParametersBag : Dictionary<string, object>
-    {
     }
 }

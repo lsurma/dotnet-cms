@@ -1,0 +1,31 @@
+﻿@inherits OwningComponentBase
+@typeparam TComponent
+
+@code {
+    [CascadingParameter]
+    public ActionHandlingContext? ActionContext { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        if (ActionContext is null)
+        {
+            
+        }
+        
+        base.OnInitialized();
+    }
+
+    protected async Task<TResult> ActionAsync<TResult>(Func<Task<TResult>> func)
+    {
+        try
+        {           
+            var result = await func();
+            return result;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+}   

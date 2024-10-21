@@ -1,4 +1,5 @@
-﻿<h3>PageForm - @PageId - @ActionContext?.InProgress</h3>
+﻿@using Surma.Cms.UI.Blazor.Components.ActionHandling
+<h3>PageForm - @PageId - @ActionContext?.AnyActionInProgress</h3>
 
 <FluentTextField Label="Host" @bind-Value="Model.Host "/>
 <FluentTextField Label="RouteTemplate" @bind-Value="Model.RouteTemplate "/>
@@ -8,7 +9,7 @@
     public string? PageId { get; set; }
     
     [CascadingParameter]
-    public ActionContext? ActionContext { get; set; }
+    public ActionHandlingContext? ActionContext { get; set; }
     
     protected PageCreateUpdateModel Model { get; set; } = new PageCreateUpdateModel();
 
@@ -40,23 +41,22 @@
         
         if (ActionContext is not null)
         {
-            ActionContext.Change(ctx => ctx.InProgress = true);
             await Task.Delay(2500);
             ActionContext.Change(ctx => {
-                ctx.InProgress = false;
             });
         }
     }
     
     protected async Task Load(string pageId)
     {
+        // await action(async () => {}); 
+        
+        
         if (ActionContext is not null)
         {
-            ActionContext.Change(ctx => ctx.InProgress = true);
             await Task.Delay(2500);
             ActionContext.Change(ctx => {
                 ctx.ElementDisplayName = pageId ?? "New Page";
-                ctx.InProgress = false;
             });
         }
     }
