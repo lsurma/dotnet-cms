@@ -1,6 +1,6 @@
 ﻿namespace Surma.Cms.UI.Blazor.Components.ActionHandling;
 
-public class ActionHandlingContext
+public class ActionContext
 {
     public string ElementDisplayName { get; set; } = "";
     
@@ -14,17 +14,17 @@ public class ActionHandlingContext
     
     protected Func<Task>? StateHasChanged { get; set; }
 
-    public void Register(ActionHandlingPanel actionHandlingPanel)
+    public void Register(ActionPanel actionPanel)
     {
-        StateHasChanged = actionHandlingPanel.InvokeStateHasChangedAsync;
+        StateHasChanged = actionPanel.InvokeStateHasChangedAsync;
     }
     
-    public void Unregister(ActionHandlingPanel actionHandlingPanel)
+    public void Unregister(ActionPanel actionPanel)
     {
         StateHasChanged = null;
     }
     
-    public void Change(Action<ActionHandlingContext> setter)
+    public void Change(Action<ActionContext> setter)
     {
         setter(this);
         StateHasChanged.Invoke();

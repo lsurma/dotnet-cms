@@ -24,7 +24,7 @@
 
     protected IDialogReference? EditorPanel { get; set; }
 
-    protected ActionHandlingPanelContentModel? EditorPanelContent { get; set; }
+    protected ActionPanelContentModel? EditorPanelContent { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -69,15 +69,15 @@
 
             if (EditorPanel == null && id != null)
             {
-                EditorPanelContent = new ActionHandlingPanelContentModel()
+                EditorPanelContent = new ActionPanelContentModel()
                 {
                     ComponentType = typeof(PageForm),
-                    Parameters = new ActionHandlingPanelParametersBag()
+                    Parameters = new ActionPanelParametersBag()
                     {
                         { "PageId", id }
                     },
                 };
-                EditorPanel = await DialogService.ShowPanelAsync<ActionHandlingPanel>(
+                EditorPanel = await DialogService.ShowPanelAsync<ActionPanel>(
                     EditorPanelContent,
                     new DialogParameters()
                     {

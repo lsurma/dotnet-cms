@@ -1,24 +1,24 @@
 ﻿namespace Surma.Cms.UI.Blazor.Components.ActionHandling;
 
-public class ActionHandlingPanelContentModel
+public class ActionPanelContentModel
 {
     public Type ComponentType { get; set; }
     
-    public ActionHandlingPanelParametersBag Parameters { get; set; } = new ActionHandlingPanelParametersBag();
+    public ActionPanelParametersBag Parameters { get; set; } = new ActionPanelParametersBag();
 
     protected Func<Task>? StateHasChanged { get; set; }
 
-    public void Register(ActionHandlingPanel actionHandlingPanel)
+    public void Register(ActionPanel actionPanel)
     {
-        StateHasChanged = actionHandlingPanel.InvokeStateHasChangedAsync;
+        StateHasChanged = actionPanel.InvokeStateHasChangedAsync;
     }
     
-    public void Unregister(ActionHandlingPanel actionHandlingPanel)
+    public void Unregister(ActionPanel actionPanel)
     {
         StateHasChanged = null;
     }
     
-    public void Change(Func<ActionHandlingPanelParametersBag, ActionHandlingPanelParametersBag> paramsSetter)
+    public void Change(Func<ActionPanelParametersBag, ActionPanelParametersBag> paramsSetter)
     {
         var newParams = paramsSetter(Parameters);
         Parameters = newParams;
@@ -26,6 +26,6 @@ public class ActionHandlingPanelContentModel
     }
 }
 
-public class ActionHandlingPanelParametersBag : Dictionary<string, object>
+public class ActionPanelParametersBag : Dictionary<string, object>
 {
 }

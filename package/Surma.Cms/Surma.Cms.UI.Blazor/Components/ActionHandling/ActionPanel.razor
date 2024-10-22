@@ -1,4 +1,4 @@
-﻿@implements IDialogContentComponent<ActionHandlingPanelContentModel>
+﻿@implements IDialogContentComponent<ActionPanelContentModel>
 @inherits OwningComponentBase
 
 <CascadingValue Value="Context">
@@ -43,12 +43,12 @@
 
 @code {
     [Parameter]
-    public ActionHandlingPanelContentModel Content { get; set; } = default!;
+    public ActionPanelContentModel Content { get; set; } = default!;
 
     [CascadingParameter]
     public FluentDialog  Dialog { get; set; }
     
-    public ActionHandlingContext Context { get; set; } = new ActionHandlingContext();
+    public ActionContext Context { get; set; } = new ActionContext();
     
     protected override void OnInitialized()
     {

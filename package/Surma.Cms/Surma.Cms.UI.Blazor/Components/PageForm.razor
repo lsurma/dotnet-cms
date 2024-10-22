@@ -9,7 +9,7 @@
     public string? PageId { get; set; }
     
     [CascadingParameter]
-    public ActionHandlingContext? ActionContext { get; set; }
+    public ActionContext? ActionContext { get; set; }
     
     protected PageCreateUpdateModel Model { get; set; } = new PageCreateUpdateModel();
 
