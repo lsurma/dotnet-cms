@@ -8,13 +8,20 @@ public class ActionHandlingContext
     
     public bool AnyActionInProgress => ActionsStack.Any(a => a.InProgress);
     
+    public bool ActionInProgress(string actionName) => ActionsStack.Any(a => a.Name == actionName && a.InProgress);
+
     public Dictionary<string, Func<Task>> Actions { get; set; } = new();
     
-    protected Func<Task> StateHasChanged { get; set; }
+    protected Func<Task>? StateHasChanged { get; set; }
 
-    public void Bind(ActionHandlingPanel actionHandlingPanel)
+    public void Register(ActionHandlingPanel actionHandlingPanel)
     {
         StateHasChanged = actionHandlingPanel.InvokeStateHasChangedAsync;
+    }
+    
+    public void Unregister(ActionHandlingPanel actionHandlingPanel)
+    {
+        StateHasChanged = null;
     }
     
     public void Change(Action<ActionHandlingContext> setter)

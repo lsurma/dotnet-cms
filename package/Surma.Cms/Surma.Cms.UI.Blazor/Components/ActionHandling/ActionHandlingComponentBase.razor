@@ -1,4 +1,5 @@
 ﻿@inherits OwningComponentBase
+@implements IDisposable
 @typeparam TComponent
 
 @code {
@@ -27,5 +28,14 @@
             Console.WriteLine(e);
             throw;
         }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+        }
+        
+        base.Dispose(disposing);
     }
 }   

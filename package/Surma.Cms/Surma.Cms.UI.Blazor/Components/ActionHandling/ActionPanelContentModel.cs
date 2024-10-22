@@ -4,16 +4,21 @@ public class ActionHandlingPanelContentModel
 {
     public Type ComponentType { get; set; }
     
-    public ActionPanelParametersBag Parameters { get; set; } = new ActionPanelParametersBag();
+    public ActionHandlingPanelParametersBag Parameters { get; set; } = new ActionHandlingPanelParametersBag();
 
-    protected Func<Task> StateHasChanged { get; set; }
+    protected Func<Task>? StateHasChanged { get; set; }
 
-    public void Bind(ActionHandlingPanel actionHandlingPanel)
+    public void Register(ActionHandlingPanel actionHandlingPanel)
     {
         StateHasChanged = actionHandlingPanel.InvokeStateHasChangedAsync;
     }
     
-    public void Change(Func<ActionPanelParametersBag, ActionPanelParametersBag> paramsSetter)
+    public void Unregister(ActionHandlingPanel actionHandlingPanel)
+    {
+        StateHasChanged = null;
+    }
+    
+    public void Change(Func<ActionHandlingPanelParametersBag, ActionHandlingPanelParametersBag> paramsSetter)
     {
         var newParams = paramsSetter(Parameters);
         Parameters = newParams;
@@ -21,6 +26,6 @@ public class ActionHandlingPanelContentModel
     }
 }
 
-public class ActionPanelParametersBag : Dictionary<string, object>
+public class ActionHandlingPanelParametersBag : Dictionary<string, object>
 {
 }
