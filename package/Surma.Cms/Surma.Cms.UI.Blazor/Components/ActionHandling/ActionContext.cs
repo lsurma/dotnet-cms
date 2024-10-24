@@ -2,6 +2,8 @@
 
 public class ActionContext
 {
+    private bool IsEmpty { get; set; } = false;
+    
     public string ElementDisplayName { get; set; } = "";
     
     public ActionsStack ActionsStack { get; set; } = new();
@@ -16,6 +18,11 @@ public class ActionContext
 
     public void Register(ActionPanel actionPanel)
     {
+        if(IsEmpty)
+        {
+            return;
+        }
+        
         StateHasChanged = actionPanel.InvokeStateHasChangedAsync;
     }
     
@@ -27,9 +34,12 @@ public class ActionContext
     public void Change(Action<ActionContext> setter)
     {
         setter(this);
-        StateHasChanged.Invoke();
+        StateHasChanged?.Invoke();
     }
 
+    public static ActionContext CreateEmpty() => new ActionContext() { IsEmpty = true };
+    
+    public static readonly ActionContext Empty = new ActionContext();
 }
 
 public class ActionsStack : List<ActionState>

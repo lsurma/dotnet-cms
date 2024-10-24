@@ -4,15 +4,14 @@
 
 @code {
     [CascadingParameter]
-    public ActionContext? ActionContext { get; set; }
+    private ActionContext? ParentActionContext { get; set; }
+    
+    public ActionContext ActionContext { get; set; } = ActionContext.Empty;
     
     protected override void OnInitialized()
     {
-        if (ActionContext is null)
-        {
-            
-        }
-        
+        ActionContext = ParentActionContext ?? new ActionContext();
+
         base.OnInitialized();
     }
 
