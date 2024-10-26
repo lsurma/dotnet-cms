@@ -1,4 +1,4 @@
-﻿namespace Surma.Cms.UI.Blazor.Components.ActionHandling;
+﻿namespace Surma.BlazorExt.ActionHandling;
 
 public class ActionContext
 {
@@ -35,6 +35,12 @@ public class ActionContext
     {
         setter(this);
         StateHasChanged?.Invoke();
+    }
+
+    // invoke with options
+    public async Task InvokeSubmitDataAsync()
+    {
+        
     }
 
     public static ActionContext CreateEmpty() => new ActionContext() { IsEmpty = true };

@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-#
+# 
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Surma.Cms.Dev", "Surma.Cms.Dev\Surma.Cms.Dev.csproj", "{9EA1A345-0BF4-4BC5-B5AB-B17BE2708DFE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Surma.Cms.Dev.Blazor", "Surma.Cms.Dev.Blazor\Surma.Cms.Dev.Blazor.csproj", "{F6B46DE3-A65E-4A77-AD19-E8BC7343F617}"
@@ -8,6 +8,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Surma.Cms.Core", "..\..\package\Surma.Cms\Surma.Cms.Core\Surma.Cms.Core.csproj", "{86FBC15C-06E4-44CD-B488-7D9DA55F25D0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Surma.Cms.UI.Blazor", "..\..\package\Surma.Cms\Surma.Cms.UI.Blazor\Surma.Cms.UI.Blazor.csproj", "{83B9B5A9-BA28-45E1-B2E8-5B7D8F1D983A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Surma.BlazorExt", "..\..\package\Surma.Cms\Surma.BlazorExt\Surma.BlazorExt.csproj", "{09AB303E-2EAF-4ACF-9B9F-FC194A596007}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,5 +33,9 @@ Global
 		{83B9B5A9-BA28-45E1-B2E8-5B7D8F1D983A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83B9B5A9-BA28-45E1-B2E8-5B7D8F1D983A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83B9B5A9-BA28-45E1-B2E8-5B7D8F1D983A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09AB303E-2EAF-4ACF-9B9F-FC194A596007}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09AB303E-2EAF-4ACF-9B9F-FC194A596007}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09AB303E-2EAF-4ACF-9B9F-FC194A596007}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09AB303E-2EAF-4ACF-9B9F-FC194A596007}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

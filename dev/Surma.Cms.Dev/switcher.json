@@ -3,7 +3,8 @@
   "solutionFolder": null,
   "mappings": {
     "Surma.Cms.Core": "../../package/Surma.Cms/Surma.Cms.Core/Surma.Cms.Core.csproj",
-    "Surma.Cms.UI.Blazor": "../../package/Surma.Cms/Surma.Cms.UI.Blazor/Surma.Cms.UI.Blazor.csproj"
+    "Surma.Cms.UI.Blazor": "../../package/Surma.Cms/Surma.Cms.UI.Blazor/Surma.Cms.UI.Blazor.csproj",
+    "Surma.BlazorExt": "../../package/Surma.Cms/Surma.BlazorExt/Surma.BlazorExt.csproj"
   },
   "restore": [],
   "removeProjects": true

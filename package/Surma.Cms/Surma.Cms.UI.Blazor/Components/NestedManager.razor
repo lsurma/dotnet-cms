@@ -1,0 +1,29 @@
+﻿@using System.Text.Json
+@inherits CmsComponentBase<CmsManager.NavParams>
+
+    <div>
+        <FluentStack HorizontalGap="16">
+            <FluentAnchor Appearance="Appearance.Accent" OnClick="Test">Pages</FluentAnchor>
+            <FluentAnchor Appearance="Appearance.Accent" Href="@(Url.WithUrlParams(p => { p.View = "nested2"; }).ToString())">Assets</FluentAnchor>
+        </FluentStack>
+    </div>
+
+    <div>
+       nested manager
+    </div>
+
+@code {
+    protected override string UrlParamsQueryKey { get; set; } = nameof(NestedManager);
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Console.WriteLine($"CmsManager.OnInitialized {DateTime.UtcNow.Ticks}");
+    }
+
+    protected async Task Test()
+    {
+        var url = Url.WithUrlParams(p => { p.View = "nested1"; });
+        _ = 1;
+    }
+}

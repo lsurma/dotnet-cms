@@ -1,8 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Surma.Cms.Core", "Surma.Cms.Core\Surma.Cms.Core.csproj", "{516EED58-3A4E-49B7-A87D-C968EC3CDB0A}"
-EndProject
+# 
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Surma.Cms.UI.Blazor", "Surma.Cms.UI.Blazor\Surma.Cms.UI.Blazor.csproj", "{7762FC4A-0238-42DF-9B7E-F4656EE60832}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Surma.BlazorExt", "Surma.BlazorExt\Surma.BlazorExt.csproj", "{5A877B0D-8768-40B4-B54C-285D86888BD5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Surma.Cms.Core", "Surma.Cms.Core\Surma.Cms.Core.csproj", "{8F42D47F-CB52-462D-897C-C0AA4D5F2DF6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -10,13 +13,17 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{516EED58-3A4E-49B7-A87D-C968EC3CDB0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{516EED58-3A4E-49B7-A87D-C968EC3CDB0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{516EED58-3A4E-49B7-A87D-C968EC3CDB0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{516EED58-3A4E-49B7-A87D-C968EC3CDB0A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7762FC4A-0238-42DF-9B7E-F4656EE60832}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7762FC4A-0238-42DF-9B7E-F4656EE60832}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7762FC4A-0238-42DF-9B7E-F4656EE60832}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7762FC4A-0238-42DF-9B7E-F4656EE60832}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A877B0D-8768-40B4-B54C-285D86888BD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A877B0D-8768-40B4-B54C-285D86888BD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A877B0D-8768-40B4-B54C-285D86888BD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A877B0D-8768-40B4-B54C-285D86888BD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F42D47F-CB52-462D-897C-C0AA4D5F2DF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F42D47F-CB52-462D-897C-C0AA4D5F2DF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F42D47F-CB52-462D-897C-C0AA4D5F2DF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F42D47F-CB52-462D-897C-C0AA4D5F2DF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

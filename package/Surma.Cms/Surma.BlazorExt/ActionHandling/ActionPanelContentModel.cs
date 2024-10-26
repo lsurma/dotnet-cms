@@ -1,4 +1,4 @@
-﻿namespace Surma.Cms.UI.Blazor.Components.ActionHandling;
+﻿namespace Surma.BlazorExt.ActionHandling;
 
 public class ActionPanelContentModel
 {

@@ -1,4 +1,4 @@
-﻿@using Surma.Cms.UI.Blazor.Components.ActionHandling
+﻿@using Surma.BlazorExt.ActionHandling
 @inherits CmsComponentBase<CmsManager.NavParams>
 @inject IDialogService DialogService
 
@@ -12,6 +12,13 @@
 </div>
 
 <FluentTreeView Items="@Items" SelectedItem="@SelectedItem" SelectedItemChanged="SelectedItemChanged" />
+
+@if(UrlParams.Action == "create")
+{
+    <ComponentRoot>
+        <NestedManager />
+    </ComponentRoot>
+}
 
 @code {
     protected override string UrlParamsQueryKey { get; set; } = nameof(Pages);
@@ -127,6 +134,7 @@
     {
         ChangeUrlParams(current => {
             current.Id = arg?.Id;
+            current.Action = "edit";
             return current;
         }, true);
 

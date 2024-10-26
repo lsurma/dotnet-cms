@@ -11,8 +11,11 @@
     public RenderFragment ChildContent { get; set; }
     
     [Parameter]
-    public Type CompontentType { get; set; }
+    public Type? CompontentType { get; set; }
 
+    [CascadingParameter] 
+    private ComponentRoot? ParentComponent { get; set; }
+    
     public List<string> Children { get; set; } = new List<string>();
     
     public string ComponentRootId { get; set; }
@@ -21,9 +24,21 @@
     
     protected override void OnInitialized()
     {
-        ComponentName = CompontentType.Name;
+        ComponentName = CompontentType?.Name ?? ChildContent.GetType().Name;
         ComponentRootId = $"{ComponentName}:{ComponentRootId}";
-        Console.WriteLine($"{ComponentRootId} {DateTime.UtcNow.Ticks}");
+        Console.WriteLine($"{ComponentRootId} {ChildContent.GetType()} {DateTime.UtcNow.Ticks}");
         base.OnInitialized();
+    }
+    
+    public void AddChild(string childId)
+    {
+        ParentComponent?.AddChild(childId);
+        Children.Add(childId);
+    }
+    
+    public void RemoveChild(string childId)
+    {
+        ParentComponent?.RemoveChild(childId);
+        Children.Remove(childId);
     }
 }

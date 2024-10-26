@@ -29,7 +29,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        ParentComponent?.Children.Add(ParamsQueryKeyInternal);
+        ParentComponent?.AddChild(ParamsQueryKeyInternal);
         Url = new ComponentUrlHelper<TUrlParams>(this);
         Navigation.LocationChanged += HandleLocationChanged;
         OnLocationChanged();
@@ -37,7 +37,7 @@
 
     public virtual void Dispose()
     {
-        ParentComponent?.Children.Remove(ParamsQueryKeyInternal);
+        ParentComponent?.RemoveChild(ParamsQueryKeyInternal);
 
         // Unsubscribe from location changed event
         Navigation.LocationChanged -= HandleLocationChanged;
@@ -154,12 +154,17 @@
         {
             var uri = _navigation.ToAbsoluteUri(_navigation.Uri);
             var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(removeExistingQueryParams ? null : uri.Query);
-
+Console.WriteLine("create uri");
             if (removeChildrenQueryParams)
             {
                 foreach (var (key, _) in query)
                 {
-                    if (BoundedComponent.ComponentRootRef?.Children.Contains(key) == true)
+                    if(BoundedComponent.ComponentRootRef?.Children.Contains(key) == true)
+                    {
+                        query.Remove(key);
+                    }
+                    
+                    if (BoundedComponent.ParentComponent?.Children.Contains(key) == true)
                     {
                         query.Remove(key);
                     }

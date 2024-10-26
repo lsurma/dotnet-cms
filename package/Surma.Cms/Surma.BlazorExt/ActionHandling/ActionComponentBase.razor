@@ -10,11 +10,27 @@
     
     protected override void OnInitialized()
     {
-        ActionContext = ParentActionContext ?? new ActionContext();
+        if (ParentActionContext != null)
+        {
+            // register
+            ActionContext = ParentActionContext;
+        }
 
         base.OnInitialized();
     }
 
+    protected async Task SubmitDataAction(
+        // params / submit data options    
+    )
+    {
+        await ActionAsync<bool>(async () => {
+            // check for override
+            return true;
+        });
+
+    }
+    
+    // + action options
     protected async Task<TResult> ActionAsync<TResult>(Func<Task<TResult>> func)
     {
         try
