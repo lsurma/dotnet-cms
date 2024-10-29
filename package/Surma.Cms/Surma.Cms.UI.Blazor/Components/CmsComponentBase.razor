@@ -2,19 +2,17 @@
 @inject IJSRuntime JsRuntime
 @inherits ComponentBase
 @typeparam TUrlParams where TUrlParams : class, ICloneable, new() 
-@using System.Linq.Expressions
 @using System.Text.Json.Serialization
+@using Surma.BlazorExt.Components
 @using Surma.Cms.UI.Blazor.DAL
 @implements IDisposable 
 
 @code {
     [CascadingParameter] 
-    private ComponentRoot? ParentComponent { get; set; }
+    private PublicParamsComponentNode? ParentComponent { get; set; }
     
     [Inject]
     protected ICmsBlazorDataService DataService { get; set; }
-    
-    protected ComponentRoot? ComponentRootRef { get; set; }
     
     protected ComponentUrlHelper<TUrlParams> Url { get; private set; }
     
@@ -29,7 +27,8 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        ParentComponent?.AddChild(ParamsQueryKeyInternal);
+        ParentComponent?.AddChildComponentPublicParamName(ParamsQueryKeyInternal);
+        
         Url = new ComponentUrlHelper<TUrlParams>(this);
         Navigation.LocationChanged += HandleLocationChanged;
         OnLocationChanged();
@@ -37,7 +36,7 @@
 
     public virtual void Dispose()
     {
-        ParentComponent?.RemoveChild(ParamsQueryKeyInternal);
+        ParentComponent?.RemoveChildComponentPublicParamName(ParamsQueryKeyInternal);
 
         // Unsubscribe from location changed event
         Navigation.LocationChanged -= HandleLocationChanged;
@@ -154,17 +153,12 @@
         {
             var uri = _navigation.ToAbsoluteUri(_navigation.Uri);
             var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(removeExistingQueryParams ? null : uri.Query);
-Console.WriteLine("create uri");
+
             if (removeChildrenQueryParams)
             {
                 foreach (var (key, _) in query)
                 {
-                    if(BoundedComponent.ComponentRootRef?.Children.Contains(key) == true)
-                    {
-                        query.Remove(key);
-                    }
-                    
-                    if (BoundedComponent.ParentComponent?.Children.Contains(key) == true)
+                    if (BoundedComponent.ParentComponent?.ChildrenComponentsPublicParamsNames.Contains(key) == true)
                     {
                         query.Remove(key);
                     }
@@ -185,21 +179,6 @@ Console.WriteLine("create uri");
             var newUri = new Uri($"{uri.GetLeftPart(UriPartial.Path)}?{string.Join("&", newQuery)}");
             return newUri;
         }
-        
-        private string GetMemberName(Expression expression)
-        {
-            if (expression is MemberExpression memberExpression)
-            {
-                return memberExpression.Member.Name;
-            }
-            else if (expression is UnaryExpression unaryExpression && unaryExpression.Operand is MemberExpression operand)
-            {
-                return operand.Member.Name;
-            }
-            throw new ArgumentException("Invalid expression");
-        }
-        
-        
     }
 
 }

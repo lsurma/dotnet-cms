@@ -1,0 +1,31 @@
+﻿@inherits ComponentBase
+
+<CascadingValue Value="this">
+    <div class="@($"PublicParamsComponentNode")">
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    
+    [CascadingParameter] 
+    private PublicParamsComponentNode? PublicParamsComponentParentNode { get; set; }
+    
+    public List<string> ChildrenComponentsPublicParamsNames { get; set; } = new List<string>();
+    
+    public void AddChildComponentPublicParamName(string paramName)
+    {
+        PublicParamsComponentParentNode?.AddChildComponentPublicParamName(paramName);
+        ChildrenComponentsPublicParamsNames.Add(paramName);
+        StateHasChanged();
+    }
+    
+    public void RemoveChildComponentPublicParamName(string paramName)
+    {
+        PublicParamsComponentParentNode?.RemoveChildComponentPublicParamName(paramName);
+        ChildrenComponentsPublicParamsNames.Remove(paramName);
+        StateHasChanged();
+    }
+}

@@ -1,7 +1,7 @@
 ﻿@using System.Text.Json
 @inherits CmsComponentBase<CmsManager.NavParams>
 
-<ComponentRoot @ref="ComponentRootRef" CompontentType="typeof(CmsManager)">
+<PublicParamsComponentNode>
     <div>
         <FluentStack HorizontalGap="16">
             <FluentAnchor Appearance="Appearance.Accent" Href="@(Url.WithUrlParams(p => { p.View = "pages"; }).ToString())">Pages</FluentAnchor>
@@ -23,7 +23,7 @@
             <b>home</b>
         }
     </div>
-</ComponentRoot>
+</PublicParamsComponentNode>
 
 @code {
     protected override string UrlParamsQueryKey { get; set; } = nameof(CmsManager);
