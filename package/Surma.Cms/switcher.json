@@ -1,0 +1,20 @@
+{
+  "solution": "Surma.Cms.sln",
+  "solutionFolder": null,
+  "mappings": {
+    "Surma.BlazorExt": "./Surma.BlazorExt/Surma.BlazorExt.csproj",
+    "Surma.Cms.Core": "./Surma.Cms.Core/Surma.Cms.Core.csproj"
+  },
+  "restore": [
+    {
+      "name": "Surma.Cms.UI.Blazor",
+      "packages": [
+        {
+          "packageName": "Surma.BlazorExt",
+          "version": "1.0.0"
+        }
+      ]
+    }
+  ],
+  "removeProjects": true
+}
